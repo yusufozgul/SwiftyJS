@@ -1,33 +1,34 @@
-import SwiftCompilerPlugin
 import SwiftSyntax
-import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-/// Implementation of the `stringify` macro, which takes an expression
-/// of any type and produces a tuple containing the value of that expression
-/// and the source code that produced the value. For example
+/// `SwiftyJSMacro` is an implementation of the `SwiftyJS` macro, which generates a js bridge class
+/// for the protocol to which the macro is added.
 ///
-///     #stringify(x + y)
-///
-///  will expand to
-///
-///     (x + y, "x + y")
-public struct StringifyMacro: ExpressionMacro {
-    public static func expansion(
-        of node: some FreestandingMacroExpansionSyntax,
-        in context: some MacroExpansionContext
-    ) -> ExprSyntax {
-        guard let argument = node.argumentList.first?.expression else {
-            fatalError("compiler bug: the macro does not have any arguments")
+/// Example:
+/// ```swift
+/// @SwiftyJS
+/// protocol JSServiceProtocol {
+///     func createUSer(name: String, age: Int) -> User
+/// }
+/// ```
+/// This will generate a `JSServiceProtocolBridge` class that implements `JSServiceProtocol` and records method calls.
+public enum SwiftyJSMacro: PeerMacro {
+    private static let jsFactory = JSFactory()
+
+    public static func expansion(of node: AttributeSyntax,
+                                 providingPeersOf declaration: some DeclSyntaxProtocol,
+                                 in context: some MacroExpansionContext) throws -> [DeclSyntax] {
+        let protocolDeclaration = try extractProtocolDeclaration(from: declaration)
+        let spyClassDeclaration = try jsFactory.classDeclaration(for: protocolDeclaration)
+
+        return [DeclSyntax(spyClassDeclaration)]
+    }
+
+    static func extractProtocolDeclaration(from declaration: DeclSyntaxProtocol) throws -> ProtocolDeclSyntax {
+        guard let protocolDeclaration = declaration.as(ProtocolDeclSyntax.self) else {
+            throw SwiftyJSDiagnostic.onlyApplicableToProtocol
         }
 
-        return "(\(argument), \(literal: argument.description))"
+        return protocolDeclaration
     }
-}
-
-@main
-struct SwiftyJSPlugin: CompilerPlugin {
-    let providingMacros: [Macro.Type] = [
-        StringifyMacro.self,
-    ]
 }
