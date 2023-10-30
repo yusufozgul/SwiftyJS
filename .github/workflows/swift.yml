@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-
     runs-on: macos-latest
 
     steps:
@@ -22,25 +21,11 @@ jobs:
 
     - uses: swift-actions/setup-swift@v1
 
-      # DerivedData Cache
-    - uses: actions/cache@v3
-      name: Cache Derived Data
-      with:
-        path: |
-          ~/Library/Developer/Xcode/DerivedData/SwiftyJS-*/Build
-          ~/Library/Developer/Xcode/DerivedData/SwiftyJS-*/SourcePackages
-        key: ${{ runner.os }}-derivedData-cache-${{ hashFiles('Package.resolved') }}
-        restore-keys: |
-          ${{ runner.os }}-derivedData-cache-
-          
-    - name: Avoid inode changes for DerivedData
-      run: defaults write com.apple.dt.XCBuild IgnoreFileSystemDeviceInodeChanges -bool YES
-
       # SPM Packages Cache
     - uses: actions/cache@v3
       name: Cache SPM Packages
       with:
-        path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
+        path: /Users/runner/work/SwiftyJS/SwiftyJS/
         key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
