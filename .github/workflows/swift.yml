@@ -29,7 +29,7 @@ jobs:
         path: |
           ~/Library/Developer/Xcode/DerivedData/SwiftyJS-*/Build
           ~/Library/Developer/Xcode/DerivedData/SwiftyJS-*/SourcePackages
-        key: ${{ runner.os }}-derivedData-cache-${{ hashFiles('**/Package.resolved') }}
+        key: ${{ runner.os }}-derivedData-cache-${{ hashFiles('Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-derivedData-cache-
           
@@ -41,7 +41,7 @@ jobs:
       name: Cache SPM Packages
       with:
         path: /Users/runner/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
 
