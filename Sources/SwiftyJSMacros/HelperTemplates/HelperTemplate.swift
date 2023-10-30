@@ -24,12 +24,6 @@ let helperTemplate = #"""
     }
 
     private func callJS<T: Decodable>(functionName: String = #function, params: [Encodable] = []) throws -> T {
-        jsContext.exceptionHandler = { (context, value) in
-            guard let value = value?.toString() else { return }
-            print(value)
-            //            throw error(value)
-        }
-
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
@@ -43,16 +37,16 @@ let helperTemplate = #"""
             throw error("Function call failed")
         }
 
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
+
         return try decoder.decode(T.self, from: result)
     }
 
     private func callJS(functionName: String = #function, params: [Encodable] = []) throws {
-        jsContext.exceptionHandler = { (context, value) in
-            guard let value = value?.toString() else { return }
-            print(value)
-            //            throw error(value)
-        }
-
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
@@ -63,6 +57,12 @@ let helperTemplate = #"""
         }
 
         function.call(withArguments: jsParams)
+
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
     }
 
     private func error(_ message: String, code: Int = 0, domain: String = "SwiftyJS", function: String = #function, file: String = #file, line: Int = #line) -> NSError {

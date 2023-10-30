@@ -19,9 +19,9 @@ public enum SwiftyJSMacro: PeerMacro {
                                  providingPeersOf declaration: some DeclSyntaxProtocol,
                                  in context: some MacroExpansionContext) throws -> [DeclSyntax] {
         let protocolDeclaration = try extractProtocolDeclaration(from: declaration)
-        let spyClassDeclaration = try jsFactory.classDeclaration(for: protocolDeclaration)
+        let classDeclaration = try jsFactory.classDeclaration(for: protocolDeclaration)
 
-        return [DeclSyntax(spyClassDeclaration)]
+        return [DeclSyntax(classDeclaration)]
     }
 
     static func extractProtocolDeclaration(from declaration: DeclSyntaxProtocol) throws -> ProtocolDeclSyntax {
