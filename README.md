@@ -1,5 +1,7 @@
 # SwiftyJS
 
+[![Swift](https://github.com/yusufozgul/SwiftyJS/actions/workflows/swift.yml/badge.svg)](https://github.com/yusufozgul/SwiftyJS/actions/workflows/swift.yml)
+
 ### Interact with your JavaScript code like Swift with Swift
 
 ## Getting Started
