@@ -22,5 +22,14 @@ jobs:
     - uses: swift-actions/setup-swift@v1
     - name: Build
       run: swift build -v
+      
     - name: Run tests
       run: swift test -v
+
+    - uses: actions/cache@v3
+      name: "Cache: SPM"
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData/SwiftyJS*/SourcePackages/
+        key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+        restore-keys: |
+            ${{ runner.os }}-spm-
