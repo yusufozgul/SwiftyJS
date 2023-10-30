@@ -30,6 +30,24 @@ final class SwiftyJSTests: XCTestCase {
 #endif
     }
 
+    func testWithOptionalVariable() throws {
+#if canImport(SwiftyJSMacros)
+        assertMacroExpansion(
+            """
+            @SwiftyJS
+            protocol DataPlugin {
+                var test: String? { get throws }
+            }
+
+            """,
+            expandedSource: withOptionalVariableResult,
+            macros: testMacros
+        )
+#else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+#endif
+    }
+
     func testMacroWithFunction() throws {
 #if canImport(SwiftyJSMacros)
         assertMacroExpansion(
@@ -76,12 +94,6 @@ class DataPluginJSBridge: DataPlugin {
     }
 
     private func callJS<T: Decodable>(functionName: String = #function, params: [Encodable] = []) throws -> T {
-        jsContext.exceptionHandler = { (context, value) in
-            guard let value = value?.toString() else { return }
-            print(value)
-            //            throw error(value)
-        }
-
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
@@ -95,16 +107,16 @@ class DataPluginJSBridge: DataPlugin {
             throw error("Function call failed")
         }
 
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
+
         return try decoder.decode(T.self, from: result)
     }
 
     private func callJS(functionName: String = #function, params: [Encodable] = []) throws {
-        jsContext.exceptionHandler = { (context, value) in
-            guard let value = value?.toString() else { return }
-            print(value)
-            //            throw error(value)
-        }
-
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
@@ -115,6 +127,12 @@ class DataPluginJSBridge: DataPlugin {
         }
 
         function.call(withArguments: jsParams)
+
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
     }
 
     private func error(_ message: String, code: Int = 0, domain: String = "SwiftyJS", function: String = #function, file: String = #file, line: Int = #line) -> NSError {
@@ -147,6 +165,106 @@ class DataPluginJSBridge: DataPlugin {
 
 """#
 
+private let withOptionalVariableResult = #"""
+protocol DataPlugin {
+    var test: String? { get throws }
+}
+
+class DataPluginJSBridge: DataPlugin {
+    private var jsContext = JSContext()!
+    private let encoder = JSValueEncoder()
+    private let decoder = JSValueDecoder()
+
+    func loadFrom(jsCode: String, resetContext: Bool = false) {
+        if resetContext {
+            jsContext = JSContext()
+        }
+
+        jsContext.evaluateScript(jsCode)
+    }
+
+    func loadFrom(url: URL, resetContext: Bool = false) throws {
+        if resetContext {
+            jsContext = JSContext()
+        }
+
+        let jsCode = try String(contentsOf: url)
+        jsContext.evaluateScript(jsCode)
+    }
+
+    private func callJS<T: Decodable>(functionName: String = #function, params: [Encodable] = []) throws -> T {
+        var jsParams: [Any] = []
+        for param in params {
+            jsParams.append(try encoder.encode(param, in: jsContext))
+        }
+
+        guard let function = jsContext.objectForKeyedSubscript(functionName.replacingOccurrences(of: "()", with: "")) else {
+            throw error("Function Not Found")
+        }
+
+        guard let result = function.call(withArguments: jsParams) else {
+            throw error("Function call failed")
+        }
+
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
+
+        return try decoder.decode(T.self, from: result)
+    }
+
+    private func callJS(functionName: String = #function, params: [Encodable] = []) throws {
+        var jsParams: [Any] = []
+        for param in params {
+            jsParams.append(try encoder.encode(param, in: jsContext))
+        }
+
+        guard let function = jsContext.objectForKeyedSubscript(functionName.replacingOccurrences(of: "()", with: "")) else {
+            throw error("Function Not Found")
+        }
+
+        function.call(withArguments: jsParams)
+
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
+    }
+
+    private func error(_ message: String, code: Int = 0, domain: String = "SwiftyJS", function: String = #function, file: String = #file, line: Int = #line) -> NSError {
+        let functionKey = "\(domain).function"
+        let fileKey = "\(domain).file"
+        let lineKey = "\(domain).line"
+
+        let error = NSError(domain: domain, code: code, userInfo: [
+            NSLocalizedDescriptionKey: message,
+            functionKey: function,
+            fileKey: file,
+            lineKey: line
+        ])
+
+        return error
+    }
+    var test: String? {
+        get throws {
+          guard let result = jsContext.objectForKeyedSubscript("test") else {
+              throw error("JSValue couldn't retrieve")
+          }
+          return try decoder.decode(String?.self, from: result)
+        }
+    }
+    func setTest(_ value: String?) throws {
+        let jsValue = try encoder.encode(value, in: jsContext)
+        jsContext.setObject(jsValue, forKeyedSubscript: "test" as (NSCopying & NSObjectProtocol)?)
+    }
+}
+
+"""#
+
+
 private let withFunctionResult = #"""
 protocol DataPlugin {
     func createUser() throws -> User
@@ -175,12 +293,6 @@ class DataPluginJSBridge: DataPlugin {
     }
 
     private func callJS<T: Decodable>(functionName: String = #function, params: [Encodable] = []) throws -> T {
-        jsContext.exceptionHandler = { (context, value) in
-            guard let value = value?.toString() else { return }
-            print(value)
-            //            throw error(value)
-        }
-
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
@@ -194,16 +306,16 @@ class DataPluginJSBridge: DataPlugin {
             throw error("Function call failed")
         }
 
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
+
         return try decoder.decode(T.self, from: result)
     }
 
     private func callJS(functionName: String = #function, params: [Encodable] = []) throws {
-        jsContext.exceptionHandler = { (context, value) in
-            guard let value = value?.toString() else { return }
-            print(value)
-            //            throw error(value)
-        }
-
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
@@ -214,6 +326,12 @@ class DataPluginJSBridge: DataPlugin {
         }
 
         function.call(withArguments: jsParams)
+
+        guard jsContext.exception.isNull else {
+            let message = jsContext.exception.toString() ?? ""
+            jsContext.exception = nil
+            throw error(message)
+        }
     }
 
     private func error(_ message: String, code: Int = 0, domain: String = "SwiftyJS", function: String = #function, file: String = #file, line: Int = #line) -> NSError {

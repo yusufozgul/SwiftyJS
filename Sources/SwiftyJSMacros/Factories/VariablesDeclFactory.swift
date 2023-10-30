@@ -8,7 +8,7 @@ struct VariablesImplementationFactory {
             try protocolVariableDeclarationWithGetterAndSetter(binding: binding)
 
             let identifierText = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text ?? ""
-            let identifierType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text ?? ""
+            let identifierType = identifierType(binding: binding)
 
             DeclSyntax(stringLiteral: """
             func set\(identifierText.prefix(1).uppercased() + identifierText.dropFirst())(_ value:\(identifierType)) throws {
@@ -21,7 +21,7 @@ struct VariablesImplementationFactory {
 
     private func protocolVariableDeclarationWithGetterAndSetter(binding: PatternBindingListSyntax.Element) throws -> DeclSyntaxProtocol {
         let identifierText = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text ?? ""
-        let identifierType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text ?? ""
+        let identifierType = identifierType(binding: binding)
         let throwsSpecifier = binding.as(PatternBindingSyntax.self)?.accessorBlock?.accessors.as(AccessorDeclListSyntax.self)?.first?.effectSpecifiers?.throwsSpecifier?.text
 
         if throwsSpecifier != "throws" {
@@ -53,5 +53,16 @@ struct VariablesImplementationFactory {
                 )
             }
         )
+    }
+
+    private func identifierType(binding: PatternBindingListSyntax.Element) -> String {
+        let identifierOptionalType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text
+        let identifierNonOptionalType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text
+
+        if let identifierOptionalType {
+            return identifierOptionalType + "?"
+        }
+
+        return identifierNonOptionalType ?? ""
     }
 }
