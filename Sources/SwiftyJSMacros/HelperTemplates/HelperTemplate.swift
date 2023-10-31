@@ -24,12 +24,14 @@ let helperTemplate = #"""
     }
 
     private func callJS<T: Decodable>(functionName: String = #function, params: [Encodable] = []) throws -> T {
+        jsContext.exception = nil
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
         }
 
-        guard let function = jsContext.objectForKeyedSubscript(functionName.replacingOccurrences(of: "()", with: "")) else {
+        guard let functionName = functionName.components(separatedBy: "(").first,
+              let function = jsContext.objectForKeyedSubscript(functionName) else {
             throw error("Function Not Found")
         }
 
@@ -37,7 +39,7 @@ let helperTemplate = #"""
             throw error("Function call failed")
         }
 
-        guard jsContext.exception.isNull else {
+        guard jsContext.exception == nil else {
             let message = jsContext.exception.toString() ?? ""
             jsContext.exception = nil
             throw error(message)
@@ -47,18 +49,20 @@ let helperTemplate = #"""
     }
 
     private func callJS(functionName: String = #function, params: [Encodable] = []) throws {
+        jsContext.exception = nil
         var jsParams: [Any] = []
         for param in params {
             jsParams.append(try encoder.encode(param, in: jsContext))
         }
 
-        guard let function = jsContext.objectForKeyedSubscript(functionName.replacingOccurrences(of: "()", with: "")) else {
+        guard let functionName = functionName.components(separatedBy: "(").first,
+              let function = jsContext.objectForKeyedSubscript(functionName) else {
             throw error("Function Not Found")
         }
 
         function.call(withArguments: jsParams)
 
-        guard jsContext.exception.isNull else {
+        guard jsContext.exception == nil else {
             let message = jsContext.exception.toString() ?? ""
             jsContext.exception = nil
             throw error(message)
