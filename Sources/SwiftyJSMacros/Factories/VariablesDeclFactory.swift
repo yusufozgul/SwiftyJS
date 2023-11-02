@@ -56,13 +56,22 @@ struct VariablesImplementationFactory {
     }
 
     private func identifierType(binding: PatternBindingListSyntax.Element) -> String {
-        let identifierOptionalType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text
-        let identifierNonOptionalType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text
-
-        if let identifierOptionalType {
-            return identifierOptionalType + "?"
+        if let identifierType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text {
+            return identifierType + "?"
+        }
+        
+        if let identifierType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(IdentifierTypeSyntax.self)?.name.text {
+            return identifierType
         }
 
-        return identifierNonOptionalType ?? ""
+        if let identifierType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(ArrayTypeSyntax.self)?.element.as(IdentifierTypeSyntax.self)?.name.text {
+            return "[\(identifierType)]"
+        }
+
+        if let identifierType = binding.as(PatternBindingSyntax.self)?.typeAnnotation?.type.as(ArrayTypeSyntax.self)?.element.as(OptionalTypeSyntax.self)?.wrappedType.as(IdentifierTypeSyntax.self)?.name.text {
+            return "[\(identifierType)?]"
+        }
+
+        return ""
     }
 }
