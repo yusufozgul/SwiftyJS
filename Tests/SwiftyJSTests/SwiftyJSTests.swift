@@ -108,7 +108,7 @@ protocol DataPlugin {
 }
 
 class DataPluginJSBridge: DataPlugin {
-    private var jsContext = JSContext()!
+    private (set) var jsContext = JSContext()!
     private let encoder = JSValueEncoder()
     private let decoder = JSValueDecoder()
 
@@ -211,7 +211,7 @@ protocol DataPlugin {
 }
 
 class DataPluginJSBridge: DataPlugin {
-    private var jsContext = JSContext()!
+    private (set) var jsContext = JSContext()!
     private let encoder = JSValueEncoder()
     private let decoder = JSValueDecoder()
 
@@ -314,7 +314,7 @@ protocol DataPlugin {
 }
 
 class DataPluginJSBridge: DataPlugin {
-    private var jsContext = JSContext()!
+    private (set) var jsContext = JSContext()!
     private let encoder = JSValueEncoder()
     private let decoder = JSValueDecoder()
 
@@ -417,7 +417,7 @@ protocol DataPlugin {
 }
 
 class DataPluginJSBridge: DataPlugin {
-    private var jsContext = JSContext()!
+    private (set) var jsContext = JSContext()!
     private let encoder = JSValueEncoder()
     private let decoder = JSValueDecoder()
 
@@ -521,7 +521,7 @@ protocol DataPlugin {
 }
 
 class DataPluginJSBridge: DataPlugin {
-    private var jsContext = JSContext()!
+    private (set) var jsContext = JSContext()!
     private let encoder = JSValueEncoder()
     private let decoder = JSValueDecoder()
 

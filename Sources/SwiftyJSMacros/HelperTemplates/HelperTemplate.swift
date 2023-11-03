@@ -2,7 +2,7 @@
 /// Imports must be declare manually due to macro isn't allow import declarations
 /// 
 let helperTemplate = #"""
-    private var jsContext = JSContext()!
+    private(set) var jsContext = JSContext()!
     private let encoder = JSValueEncoder()
     private let decoder = JSValueDecoder()
 
