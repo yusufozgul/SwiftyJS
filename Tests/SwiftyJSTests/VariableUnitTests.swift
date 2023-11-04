@@ -1,8 +1,41 @@
-/// Bridge Class default functions and variables
-/// Imports must be declare manually due to macro isn't allow import declarations
-/// 
-let helperTemplate = #"""
-    private(set) var jsContext = JSContext()!
+//
+//  VariableUnitTests.swift
+//  
+//
+//  Created by Yusuf Özgül on 4.11.2023.
+//
+
+import SwiftSyntaxMacros
+import SwiftSyntaxMacrosTestSupport
+import XCTest
+
+final class VariableUnitTests: XCTestCase {
+    func testWithVariable() throws {
+#if canImport(SwiftyJSMacros)
+        assertMacroExpansion(
+            """
+            @SwiftyJS
+            protocol DataPlugin {
+                var test: String { get throws }
+            }
+
+            """,
+            expandedSource: withVariableResult,
+            macros: testMacros
+        )
+#else
+        throw XCTSkip("macros are only supported when running tests for the host platform")
+#endif
+    }
+}
+
+private let withVariableResult = #"""
+protocol DataPlugin {
+    var test: String { get throws }
+}
+
+class DataPluginJSBridge: DataPlugin {
+    private (set) var jsContext = JSContext()!
     private let encoder = JSValueEncoder()
     private let decoder = JSValueDecoder()
 
@@ -147,5 +180,18 @@ let helperTemplate = #"""
 
         return error
     }
+    var test: String {
+        get throws {
+          guard let result = jsContext.objectForKeyedSubscript("test") else {
+              throw error("JSValue couldn't retrieve")
+          }
+          return try decoder.decode(String.self, from: result)
+        }
+    }
+    func setTest(_ value: String) throws {
+        let jsValue = try encoder.encode(value, in: jsContext)
+        jsContext.setObject(jsValue, forKeyedSubscript: "test" as (NSCopying & NSObjectProtocol)?)
+    }
+}
 
 """#

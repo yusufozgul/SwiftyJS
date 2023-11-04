@@ -29,7 +29,11 @@ struct FunctionImplementationFactory {
                                                       arguments: arguments,
                                                       rightParen: .rightParenToken())
 
-            TryExprSyntax(expression: functionCall)
+            if protocolFunctionDeclaration.signature.effectSpecifiers?.asyncSpecifier != nil {
+                TryExprSyntax(expression: AwaitExprSyntax(expression: functionCall))
+            } else {
+                TryExprSyntax(expression: functionCall)
+            }
         }
     }
 }

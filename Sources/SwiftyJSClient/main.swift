@@ -14,6 +14,8 @@ protocol DataCreator {
     var lastUser: User { get throws }
 
     func createUser() throws -> User
+    func createAsyncUser() async throws -> User
+    func createAsyncUserWithoutReturn() async throws
 }
 
 let js = DataCreatorJSBridge()
@@ -38,6 +40,21 @@ print("")
 
 print("Set Last User: ")
 try js.setLastUser(User(id: "7", name: "John", score: 1.3))
+
+print("")
+
+print("Last User: ")
+print(try js.lastUser)
+
+print("")
+
+print("Create Async User: ")
+print(try await js.createAsyncUser())
+
+print("")
+
+print("Create Async User: ")
+print(try await js.createAsyncUserWithoutReturn())
 
 print("")
 
