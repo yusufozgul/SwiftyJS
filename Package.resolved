@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "jsvaluecoder",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/theolampert/JSValueCoder",
-      "state" : {
-        "branch" : "main",
-        "revision" : "9e15b58c144158fad33cde7e90f334dca2ca17a2"
-      }
-    },
-    {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax.git",

@@ -19,7 +19,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0"),
-        .package(url: "https://github.com/theolampert/JSValueCoder", branch: "main"),
     ],
     targets: [
         .macro(
@@ -33,7 +32,7 @@ let package = Package(
         .target(name: "SwiftyJS", dependencies: ["SwiftyJSMacros"]),
 
         .executableTarget(name: "SwiftyJSClient",
-                          dependencies: ["SwiftyJS", "JSValueCoder"],
+                          dependencies: ["SwiftyJS"],
                           resources: [.copy("Resources/TestFiles")]),
 
         .testTarget(

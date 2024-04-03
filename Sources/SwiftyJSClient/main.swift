@@ -1,10 +1,9 @@
 import SwiftyJS
-import JSValueCoder
 import Foundation
 import JavaScriptCore
 
 struct User: Codable {
-    let id: String
+    let id: Int
     let name: String
     let score: Double
 }
@@ -39,7 +38,7 @@ print(try js.lastUser)
 print("")
 
 print("Set Last User: ")
-try js.setLastUser(User(id: "7", name: "John", score: 1.3))
+try js.setLastUser(User(id: 7, name: "John", score: 1.3))
 
 print("")
 
