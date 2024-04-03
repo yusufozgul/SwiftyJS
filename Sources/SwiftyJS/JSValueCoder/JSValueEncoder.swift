@@ -254,7 +254,7 @@ extension JSValueEncoder {
         }
 
         func encode(_ value: Int) {
-            encode(Int32(value))
+            encode(Double(value))
         }
 
         func encode(_ value: Int8) {
@@ -266,7 +266,7 @@ extension JSValueEncoder {
         }
 
         func encode(_ value: Int64) {
-            encode(Int32(value))
+            encode(Double(value))
         }
 
         func encode(_ value: UInt) {
@@ -282,7 +282,7 @@ extension JSValueEncoder {
         }
 
         func encode(_ value: UInt64) {
-            encode(UInt32(value))
+            encode(Double(value))
         }
 
         func encode<T>(_ value: T) throws where T: Encodable {
@@ -357,7 +357,7 @@ extension JSValueEncoder {
         }
 
         func encode(_ value: Int) {
-            encode(Int32(value))
+            encode(Double(value))
         }
 
         func encode(_ value: Int8) {
@@ -369,7 +369,7 @@ extension JSValueEncoder {
         }
 
         func encode(_ value: Int64) {
-            encode(Int32(value))
+            encode(Double(value))
         }
 
         func encode(_ value: UInt) {
@@ -385,7 +385,7 @@ extension JSValueEncoder {
         }
 
         func encode(_ value: UInt64) {
-            encode(UInt32(value))
+            encode(Double(value))
         }
 
         func encode<T>(_ value: T) throws where T: Encodable {

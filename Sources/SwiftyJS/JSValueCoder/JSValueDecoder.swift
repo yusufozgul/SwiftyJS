@@ -148,7 +148,7 @@ extension JSValueDecoder {
         }
 
         func decode(_: Int64.Type, forKey key: Key) -> Int64 {
-            return numericCast(decode(Int32.self, forKey: key))
+            return Int64(decodeValue(forKey: key).toDouble())
         }
 
         func decode(_: UInt.Type, forKey key: Key) -> UInt {
@@ -164,7 +164,7 @@ extension JSValueDecoder {
         }
 
         func decode(_: UInt64.Type, forKey key: Key) -> UInt64 {
-            return numericCast(decode(UInt32.self, forKey: key))
+            return UInt64(decodeValue(forKey: key).toDouble())
         }
 
         func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T: Decodable {
@@ -282,7 +282,7 @@ private extension JSValueDecoder {
         }
 
         mutating func decode(_: Int64.Type) -> Int64 {
-            return numericCast(decode(Int32.self))
+            return Int64(decodeValue(forKey: key).toDouble())
         }
 
         mutating func decode(_: UInt.Type) -> UInt {
@@ -298,7 +298,7 @@ private extension JSValueDecoder {
         }
 
         mutating func decode(_: UInt64.Type) -> UInt64 {
-            return numericCast(decode(UInt32.self))
+            return uint64(decodeValue(forKey: key).toDouble())
         }
 
         mutating func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
@@ -395,7 +395,7 @@ private extension JSValueDecoder {
         }
 
         func decode(_: Int64.Type) -> Int64 {
-            return numericCast(decode(Int32.self))
+            return Int64(decodeValue(forKey: key).toDouble())
         }
 
         func decode(_: UInt.Type) -> UInt {
@@ -411,7 +411,7 @@ private extension JSValueDecoder {
         }
 
         func decode(_: UInt64.Type) -> UInt64 {
-            return numericCast(decode(UInt32.self))
+            return uint64(decodeValue(forKey: key).toDouble())
         }
 
         func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
