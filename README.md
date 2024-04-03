@@ -57,10 +57,9 @@ print(try js.lastUser)
 ## Installation
 **For Xcode project**
 
-You can add [SwiftyJS](https://github.com/yusufozgul/SwiftyJS) macro and [JSValueCoder](https://github.com/theolampert/JSValueCoder) to your project as a package.
+You can add [SwiftyJS](https://github.com/yusufozgul/SwiftyJS) macro to your project as a package.
 
 > `https://github.com/yusufozgul/SwiftyJS` <br>
-> `https://github.com/theolampert/JSValueCoder`
 
 **For Swift Package Manager**
 
@@ -69,7 +68,6 @@ In `Package.swift` add:
 ``` swift
 dependencies: [
     .package(url: "https://github.com/yusufozgul/SwiftyJS", from: "0.0.1"),
-    .package(url: "https://github.com/theolampert/JSValueCoder", branch: "main"),
 ]
 ```
 
@@ -77,8 +75,10 @@ and then add the product to any target that needs access to the macro:
 
 ```swift
 .product(name: "SwiftyJS", package: "SwiftyJS"),
-"JSValueCoder",
 ```
+
+## 🎉 Acknowledgements
+- https://github.com/theolampert/JSValueCoder
 
 ## License
 
